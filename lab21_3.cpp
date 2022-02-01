@@ -10,7 +10,10 @@ using namespace std;
 struct student{
 
     //Define struct student with four member (name ,id , gender, gpa);
-    
+	char name[450];
+	int id;
+	char gender[50];
+	float gpa;
 };
 
 struct course{
@@ -20,7 +23,7 @@ struct course{
 	vector<student *> student_list;
 };
 
-student * findstudent(vector<student> allstudents,int key){ //There is something wrong in this line.
+student * findstudent(vector<student> &allstudents,int key){ //There is something wrong in this line.
 	for(unsigned int i = 0; i < allstudents.size(); i++){
 		if(allstudents[i].id  == key) return &allstudents[i];
 	}
@@ -47,8 +50,7 @@ void printreport(vector<course> allcourses){
 			cout << left << setw(10) << allcourses[i].student_list[j]->id;
 			cout << left << setw(3) << allcourses[i].student_list[j]->gender;
 			cout << left << setw(5) << setprecision(2) << fixed << allcourses[i].student_list[j]->gpa << "\n";
-		} 
-		
+		}
 	}
 	cout << "-----------------------------------------------------------------------------\n";
 }
@@ -62,14 +64,15 @@ int main(){
 	string textline;
 	
 	while(getline(student_file,textline)){
-		student s; 
+		student s;
 		
 		//Use sscanf() to split the values in textline and assign those values to the members of struct s;
-
-		allstudents.push_back(s); 		
+		sscanf(textline.c_str(),"%[^,],%d,%[^,],%f",s.name,&s.id,s.gender,&s.gpa);
+		allstudents.push_back(s);
 	}
 	
 	int state = 1;
+	int i =0;
 	while(getline(course_file,textline)){
 		if(state == 1){
 			course c;
@@ -78,22 +81,24 @@ int main(){
 			c.id = atof(textline.substr(loc+1,5).c_str());
 			getline(course_file,textline);
 			allcourses.push_back(c);
-			state = 2;			
+			state = 2;
 		}else if(state == 2){
 			if(textline == "> Students"){
 				state = 3;
 			}else{
-			
+		
 			    //Append (push_back) textline to lecture_list[] of the recently added course in allcourses[];
-			    
-			}			
+			    allcourses[i].lecture_list.push_back(textline);
+			
+			}
 		}else{
 			if(textline == "---------------------------------------"){
 				state = 1;
+				i++;
 			}else{
 				student *p = findstudent(allstudents,atof(textline.c_str()));
-				
 				//Append (push_back) p to student_list of the recently added course in allcourses[];
+				allcourses[i].student_list.push_back(p);
 				
 			}
 		}
